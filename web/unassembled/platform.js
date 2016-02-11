@@ -434,39 +434,19 @@ var PDIV          = $('pubnub') || 0
     bind( 'offline', window,   SELF['offline'] );
     bind( 'offline', document, SELF['offline'] );
 
+    SELF['ready']();
+
     // Return PUBNUB Socket Object
     return SELF;
 };
+
 CREATE_PUBNUB['init']   = CREATE_PUBNUB;
 CREATE_PUBNUB['secure'] = CREATE_PUBNUB;
 CREATE_PUBNUB['crypto_obj'] = crypto_obj(); // export to constructor
 
-// Bind for PUBNUB Readiness to Subscribe
-if (document.readyState === 'complete') {
-    timeout( ready, 0 );
-}
-else {
-    bind( 'load', window, function(){ timeout( ready, 0 ) } );
-}
-
-var pdiv = PDIV || {};
-
-// CREATE A PUBNUB GLOBAL OBJECT
-PUBNUB = CREATE_PUBNUB({
-    'notest'        : 1,
-    'publish_key'   : attr( pdiv, 'pub-key' ),
-    'subscribe_key' : attr( pdiv, 'sub-key' ),
-    'ssl'           : !document.location.href.indexOf('https') ||
-                      attr( pdiv, 'ssl' ) == 'on',
-    'origin'        : attr( pdiv, 'origin' ),
-    'uuid'          : attr( pdiv, 'uuid' )
-});
-
-// jQuery Interface
-window['jQuery'] && (window['jQuery']['PUBNUB'] = CREATE_PUBNUB);
-
-// For Modern JS + Testling.js - http://testling.com/
-typeof(module) !== 'undefined' && (module['exports'] = PUBNUB) && ready();
+PUBNUB = CREATE_PUBNUB({});
+typeof module  !== 'undefined' && (module.exports = CREATE_PUBNUB) ||
+typeof exports !== 'undefined' && (exports.PUBNUB = CREATE_PUBNUB) || (PUBNUB = CREATE_PUBNUB);
 
 var pubnubs = $('pubnubs') || 0;
 
