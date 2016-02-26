@@ -134,8 +134,8 @@ function PNmessage(args) {
 }
 
 function PN_API(setup) {
-  let { xdr, subscribe_key, publish_key } = setup;
-  let networkingComponent = new Networking(xdr, subscribe_key, publish_key);
+  let { xdr, origin, ssl, subscribe_key, publish_key } = setup;
+  let networkingComponent = new Networking(xdr, subscribe_key, publish_key, ssl, origin);
 
   var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
   var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;
@@ -146,9 +146,8 @@ function PN_API(setup) {
   var SECRET_KEY = setup['secret_key'] || '';
   var hmac_SHA256 = setup['hmac_SHA256'];
   var SSL = setup['ssl'] ? 's' : '';
-  var ORIGIN = 'http' + SSL + '://' + (setup['origin'] || 'pubsub.pubnub.com');
-  var STD_ORIGIN = networkingComponent.nextOrigin(ORIGIN, false);
-  var SUB_ORIGIN = networkingComponent.nextOrigin(ORIGIN, false);
+  var STD_ORIGIN = networkingComponent.nextOrigin(false);
+  var SUB_ORIGIN = networkingComponent.nextOrigin(false);
   var CONNECT = function () {
   };
   var PUB_QUEUE = [];
@@ -431,7 +430,7 @@ function PN_API(setup) {
   var SELF = {
     LEAVE: function (channel, blocking, auth_key, callback, error) {
       var data: Object = { uuid: UUID, auth: auth_key || AUTH_KEY };
-      var origin = networkingComponent.nextOrigin(ORIGIN);
+      var origin = networkingComponent.nextOrigin(false);
       var callback = callback || function () {};
       var err = error || function () {};
       var url;
@@ -487,7 +486,7 @@ function PN_API(setup) {
 
     LEAVE_GROUP: function (channel_group, blocking, auth_key, callback, error) {
       var data: Object = { uuid: UUID, auth: auth_key || AUTH_KEY };
-      var origin = networkingComponent.nextOrigin(ORIGIN);
+      var origin = networkingComponent.nextOrigin(false);
       var url;
       var params;
       var callback = callback || function () {};
@@ -1189,8 +1188,8 @@ function PN_API(setup) {
           utils.timeout(CONNECT, windowing);
         } else {
           // New Origin on Failed Connection
-          STD_ORIGIN = networkingComponent.nextOrigin(ORIGIN, 1);
-          SUB_ORIGIN = networkingComponent.nextOrigin(ORIGIN, 1);
+          STD_ORIGIN = networkingComponent.nextOrigin(true);
+          SUB_ORIGIN = networkingComponent.nextOrigin(true);
 
           // Re-test Connection
           utils.timeout(function () {

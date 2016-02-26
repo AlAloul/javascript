@@ -14,20 +14,29 @@ export default class {
   maxHostNumber: number;
   currentOrigin: number;
 
-  constructor(xdr: Function, subscribeKey: string, publishKey: string) {
+  origin: string;
+
+  constructor(xdr: Function,
+              subscribeKey: string,
+              publishKey: string,
+              ssl: boolean = false,
+              origin: string = 'pubsub.pubnub.com'
+              ) {
     this.xdr = xdr;
     this.subscribeKey = subscribeKey;
     this.publishKey = publishKey;
 
     this.maxHostNumber = 20;
     this.currentOrigin = Math.floor(Math.random() * this.maxHostNumber);
+
+    this.origin = (ssl ? 'https://' : 'http://') + origin;
   }
 
 
-  nextOrigin(origin: string, failover: boolean): string {
+  nextOrigin(failover: boolean): string {
     // if a custom origin is supplied, use do not bother with shuffling subdomains
-    if (origin.indexOf('pubsub.') === -1) {
-      return origin;
+    if (this.origin.indexOf('pubsub.') === -1) {
+      return this.origin;
     }
 
     let newSubdomain: string;
@@ -42,7 +51,7 @@ export default class {
       newSubdomain = this.currentOrigin.toString();
     }
 
-    return origin.replace('pubsub', 'ps' + newSubdomain);
+    return this.origin.replace('pubsub', 'ps' + newSubdomain);
   }
 
   // method based URL's

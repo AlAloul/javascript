@@ -1,12 +1,58 @@
 /* global describe, beforeEach, it, before, afterEach */
 /* eslint no-console: 0 */
 
-let Networking = require('../../../../../core/lib/components/networking');
+import Networking from '../../../../../core/src/components/networking';
 
-const utils = require('../../../../../core/lib/utils');
+const utils = require('../../../../../core/src/utils');
 const assert = require('assert');
 const sinon = require('sinon');
 
+
+function testNextOrigin(sslEnabled) {
+  it('it does not operate on non pubsub domains', () => {
+    var networking = new Networking(null, 'subKey', 'pubKey', sslEnabled, 'custom.url.com');
+    let newDomain = networking.nextOrigin('http://custom.url.com');
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'custom.url.com');
+  });
+
+  it('applies the next subdomain if default url is used', () => {
+    var networking = new Networking(null, 'subKey', 'pubKey', sslEnabled, 'pubsub.pubnub.com');
+    let newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps17.pubnub.com');
+  });
+
+  // assuming MAX=20 inside the configurations, this test is not isolated.
+  it('applies the next subdomain if default url is used and resets over', () => {
+    var networking = new Networking(null, 'subKey', 'pubKey', sslEnabled, 'pubsub.pubnub.com');
+    let newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps17.pubnub.com');
+    newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps18.pubnub.com');
+    newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps19.pubnub.com');
+    newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps1.pubnub.com');
+    newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps2.pubnub.com');
+    newDomain = networking.nextOrigin();
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps3.pubnub.com');
+  });
+
+  it('supports failover', () => {
+    var networking = new Networking(null, 'subKey', 'pubKey', sslEnabled, 'pubsub.pubnub.com');
+    let newDomain = networking.nextOrigin(true);
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps5f0651fc.pubnub.com');
+
+    utils.generateUUID.restore();
+
+    sinon.stub(utils, 'generateUUID', function () {
+      return '5f1z51fc-5b92-4a3b-96ca-08eee41508bd';
+    });
+
+    newDomain = networking.nextOrigin(true);
+    assert.equal(newDomain, (sslEnabled ? 'https://' : 'http://') + 'ps5f1z51fc.pubnub.com');
+  });
+}
 
 describe('#components/networking', () => {
   it('creates a class with publish and subscribe keys', () => {
@@ -14,7 +60,17 @@ describe('#components/networking', () => {
 
     assert.equal(networking.getPublishKey(), 'pubKey');
     assert.equal(networking.getSubscribeKey(), 'subKey');
+    assert.equal(networking.origin, 'http://pubsub.pubnub.com');
   });
+
+  it('creates a class with publish and subscribe keys and SSL enabled', () => {
+    var networking = new Networking(null, 'subKey', 'pubKey', true);
+
+    assert.equal(networking.getPublishKey(), 'pubKey');
+    assert.equal(networking.getSubscribeKey(), 'subKey');
+    assert.equal(networking.origin, 'https://pubsub.pubnub.com');
+  });
+
 
   describe('#nextOrigin', () => {
     beforeEach(() => {
@@ -32,48 +88,16 @@ describe('#components/networking', () => {
       utils.generateUUID.restore();
     });
 
-    it('it does not operate on non pubsub domains', () => {
-      var networking = new Networking(null, 'subKey', 'pubKey');
-      let newDomain = networking.nextOrigin('http://custom.url.com');
-      assert.equal(newDomain, 'http://custom.url.com');
+    describe('with SSL enabled', () => {
+      testNextOrigin(true);
     });
 
-    it('applies the next subdomain if default url is used', () => {
-      var networking = new Networking(null, 'subKey', 'pubKey');
-      let newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps17.pubnub.com');
+    describe('with SSL disabled', () => {
+      testNextOrigin(false);
     });
 
-    // assuming MAX=20 inside the configurations, this test is not isolated.
-    it('applies the next subdomain if default url is used and resets over', () => {
-      var networking = new Networking(null, 'subKey', 'pubKey');
-      let newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps17.pubnub.com');
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps18.pubnub.com');
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps19.pubnub.com');
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps1.pubnub.com');
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps2.pubnub.com');
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com');
-      assert.equal(newDomain, 'http://ps3.pubnub.com');
-    });
-
-    it('supports failover', () => {
-      var networking = new Networking(null, 'subKey', 'pubKey');
-      let newDomain = networking.nextOrigin('http://pubsub.pubnub.com', true);
-      assert.equal(newDomain, 'http://ps5f0651fc.pubnub.com');
-
-      utils.generateUUID.restore();
-
-      sinon.stub(utils, 'generateUUID', function () {
-        return '5f1z51fc-5b92-4a3b-96ca-08eee41508bd';
-      });
-
-      newDomain = networking.nextOrigin('http://pubsub.pubnub.com', true);
-      assert.equal(newDomain, 'http://ps5f1z51fc.pubnub.com');
+    describe('with SSL omitted', () => {
+      testNextOrigin(null);
     });
   });
 
