@@ -138,6 +138,7 @@ function PN_API(setup) {
   let { xdr, subscribe_key, publish_key, ssl, origin, auth_key } = setup;
 
   let keychain = new Keychain()
+    .setInstanceId('')
     .setAuthKey(auth_key || '')
     .setSubscribeKey(subscribe_key)
     .setPublishKey(publish_key);
@@ -185,7 +186,6 @@ function PN_API(setup) {
   var CIPHER_KEY = setup['cipher_key'];
   var UUID = setup['uuid'] || (!setup['unique_uuid'] && db && db['get'](keychain.getSubscribeKey() + 'uuid') || '');
   var USE_INSTANCEID = setup['instance_id'] || false;
-  var INSTANCEID = '';
   var shutdown = setup['shutdown'];
   var use_send_beacon = (typeof setup['use_send_beacon'] != 'undefined') ? setup['use_send_beacon'] : true;
   var sendBeacon = (use_send_beacon) ? setup['sendBeacon'] : null;
@@ -454,7 +454,7 @@ function PN_API(setup) {
 
       if (jsonp != '0') data['callback'] = jsonp;
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       url = [
         origin, 'v2', 'presence', 'sub_key',
@@ -511,7 +511,7 @@ function PN_API(setup) {
 
       if (channel_group && channel_group.length > 0) data['channel-group'] = channel_group;
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       url = [
         origin, 'v2', 'presence', 'sub_key',
@@ -862,7 +862,7 @@ function PN_API(setup) {
 
       var data: Object = { uuid: UUID, auth: keychain.getAuthKey() };
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       networkingComponent.fetchTime(jsonp, {
         callback: jsonp,
@@ -921,7 +921,7 @@ function PN_API(setup) {
 
       if (!store) params['store'] = '0';
 
-      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) params['instanceid'] = keychain.getInstanceId();
 
       // Queue Message Send
       PUB_QUEUE[add_msg]({
@@ -1258,7 +1258,7 @@ function PN_API(setup) {
 
         if (PRESENCE_HB) data['heartbeat'] = PRESENCE_HB;
 
-        if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+        if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
         start_presence_heartbeat();
         SUB_RECEIVER = xdr({
@@ -1451,7 +1451,7 @@ function PN_API(setup) {
         !channel && url.push('channel') && url.push(',');
       }
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       xdr({
         callback: jsonp,
@@ -1486,7 +1486,7 @@ function PN_API(setup) {
         data['callback'] = jsonp;
       }
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       xdr({
         callback: jsonp,
@@ -1545,7 +1545,7 @@ function PN_API(setup) {
 
       data['state'] = JSON.stringify(state);
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       if (state) {
         url = [
@@ -1702,7 +1702,7 @@ function PN_API(setup) {
         params['remove'] = channel;
       }
 
-      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) params['instanceid'] = keychain.getInstanceId();
 
       xdr({
         callback: jsonp,
@@ -1834,7 +1834,7 @@ function PN_API(setup) {
       if (!channels) channels = ',';
       if (channel_groups) data['channel-group'] = channel_groups;
 
-      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
       xdr({
         callback: jsonp,
@@ -1912,7 +1912,7 @@ function PN_API(setup) {
   }
 
   if (!UUID) UUID = SELF['uuid']();
-  if (!INSTANCEID) INSTANCEID = SELF['uuid']();
+  if (!keychain.getInstanceId()) keychain.setInstanceId(SELF['uuid']());
   db['set'](keychain.getSubscribeKey() + 'uuid', UUID);
 
   _poll_timer = utils.timeout(_poll_online, SECOND);

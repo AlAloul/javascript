@@ -32,6 +32,12 @@ var _class = function () {
       return this;
     }
   }, {
+    key: "setInstanceId",
+    value: function setInstanceId(instanceId) {
+      this._instanceId = instanceId;
+      return this;
+    }
+  }, {
     key: "getSubscribeKey",
     value: function getSubscribeKey() {
       return this._subscribeKey;
@@ -45,6 +51,11 @@ var _class = function () {
     key: "getAuthKey",
     value: function getAuthKey() {
       return this._authKey;
+    }
+  }, {
+    key: "getInstanceId",
+    value: function getInstanceId() {
+      return this._instanceId;
     }
   }]);
 

@@ -542,7 +542,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var auth_key = setup.auth_key;
 
 
-	  var keychain = new _keychain2.default().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+	  var keychain = new _keychain2.default().setInstanceId('').setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
 
 	  var networkingComponent = new _networking2.default(xdr, keychain, ssl, origin);
 
@@ -587,7 +587,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var CIPHER_KEY = setup['cipher_key'];
 	  var UUID = setup['uuid'] || !setup['unique_uuid'] && db && db['get'](keychain.getSubscribeKey() + 'uuid') || '';
 	  var USE_INSTANCEID = setup['instance_id'] || false;
-	  var INSTANCEID = '';
 	  var _shutdown = setup['shutdown'];
 	  var use_send_beacon = typeof setup['use_send_beacon'] != 'undefined' ? setup['use_send_beacon'] : true;
 	  var sendBeacon = use_send_beacon ? setup['sendBeacon'] : null;
@@ -845,7 +844,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (jsonp != '0') data['callback'] = jsonp;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', utils.encode(channel), 'leave'];
 
@@ -897,7 +896,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (channel_group && channel_group.length > 0) data['channel-group'] = channel_group;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', utils.encode(','), 'leave'];
 
@@ -1244,7 +1243,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var data = { uuid: UUID, auth: keychain.getAuthKey() };
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      networkingComponent.fetchTime(jsonp, {
 	        callback: jsonp,
@@ -1298,7 +1297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (!store) params['store'] = '0';
 
-	      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) params['instanceid'] = keychain.getInstanceId();
 
 	      // Queue Message Send
 	      PUB_QUEUE[add_msg]({
@@ -1631,7 +1630,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (PRESENCE_HB) data['heartbeat'] = PRESENCE_HB;
 
-	        if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	        if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	        start_presence_heartbeat();
 	        SUB_RECEIVER = xdr({
@@ -1806,7 +1805,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        !channel && url.push('channel') && url.push(',');
 	      }
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      xdr({
 	        callback: jsonp,
@@ -1841,7 +1840,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        data['callback'] = jsonp;
 	      }
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      xdr({
 	        callback: jsonp,
@@ -1892,7 +1891,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      data['state'] = JSON.stringify(state);
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      if (state) {
 	        url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub-key', keychain.getSubscribeKey(), 'channel', channel, 'uuid', uuid, 'data'];
@@ -2033,7 +2032,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        params['remove'] = channel;
 	      }
 
-	      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) params['instanceid'] = keychain.getInstanceId();
 
 	      xdr({
 	        callback: jsonp,
@@ -2162,7 +2161,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!channels) channels = ',';
 	      if (channel_groups) data['channel-group'] = channel_groups;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (USE_INSTANCEID) data['instanceid'] = keychain.getInstanceId();
 
 	      xdr({
 	        callback: jsonp,
@@ -2233,7 +2232,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  if (!UUID) UUID = SELF['uuid']();
-	  if (!INSTANCEID) INSTANCEID = SELF['uuid']();
+	  if (!keychain.getInstanceId()) keychain.setInstanceId(SELF['uuid']());
 	  db['set'](keychain.getSubscribeKey() + 'uuid', UUID);
 
 	  _poll_timer = utils.timeout(_poll_online, SECOND);
@@ -2471,6 +2470,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	  }, {
+	    key: "setInstanceId",
+	    value: function setInstanceId(instanceId) {
+	      this._instanceId = instanceId;
+	      return this;
+	    }
+	  }, {
 	    key: "getSubscribeKey",
 	    value: function getSubscribeKey() {
 	      return this._subscribeKey;
@@ -2484,6 +2489,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: "getAuthKey",
 	    value: function getAuthKey() {
 	      return this._authKey;
+	    }
+	  }, {
+	    key: "getInstanceId",
+	    value: function getInstanceId() {
+	      return this._instanceId;
 	    }
 	  }]);
 

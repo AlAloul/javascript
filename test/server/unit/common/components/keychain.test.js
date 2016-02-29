@@ -20,4 +20,9 @@ describe('#components/keychain', () => {
     let keychain = new Keychain().setPublishKey('pubKey');
     assert.equal(keychain.getPublishKey(), 'pubKey');
   });
+
+  it('supports instance IDs', () => {
+    let keychain = new Keychain().setInstanceId('instanceId');
+    assert.equal(keychain.getInstanceId(), 'instanceId');
+  });
 });
