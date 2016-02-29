@@ -9,6 +9,8 @@
 import Networking from './components/networking';
 import Keychain from './components/keychain';
 
+import ReplayEndpoints from './endpoints/replay';
+
 var packageJSON = require('../../package.json');
 var defaultConfiguration = require('../defaults.json');
 var utils = require('./utils');
@@ -431,7 +433,7 @@ function PN_API(setup) {
   }
 
   // Announce Leave Event
-  var SELF = {
+  var SELF: Object = {
     LEAVE: function (channel, blocking, auth_key, callback, error) {
       var data: Object = { uuid: UUID, auth: auth_key || keychain.getAuthKey() };
       var origin = networkingComponent.nextOrigin(false);
@@ -793,56 +795,6 @@ function PN_API(setup) {
         fail: function (response) {
           _invoke_error(response, err);
         }
-      });
-    },
-
-    /*
-     PUBNUB.replay({
-     source      : 'my_channel',
-     destination : 'new_channel'
-     });
-     */
-    replay: function (args, callback) {
-      var callback = callback || args['callback'] || function () {};
-      var auth_key = args['auth_key'] || keychain.getAuthKey();
-      var source = args['source'];
-      var destination = args['destination'];
-      var err = args['error'] || args['error'] || function () {};
-      var stop = args['stop'];
-      var start = args['start'];
-      var end = args['end'];
-      var reverse = args['reverse'];
-      var limit = args['limit'];
-      var jsonp = jsonp_cb();
-      var data = {};
-      var url;
-
-      // Check User Input
-      if (!source) return error('Missing Source Channel');
-      if (!destination) return error('Missing Destination Channel');
-      if (!keychain.getPublishKey()) return error('Missing Publish Key');
-      if (!keychain.getSubscribeKey()) return error('Missing Subscribe Key');
-
-      // Setup URL Params
-      if (jsonp != '0') data['callback'] = jsonp;
-      if (stop) data['stop'] = 'all';
-      if (reverse) data['reverse'] = 'true';
-      if (start) data['start'] = start;
-      if (end) data['end'] = end;
-      if (limit) data['count'] = limit;
-
-      data['auth'] = auth_key;
-
-      // Start (or Stop) Replay!
-      networkingComponent.fetchReplay(source, destination, {
-        callback: jsonp,
-        success: function (response) {
-          _invoke_callback(response, callback, err);
-        },
-        fail: function () {
-          callback([0, 'Disconnected']);
-        },
-        data: _get_url_params(data)
       });
     },
 
@@ -1882,6 +1834,14 @@ function PN_API(setup) {
     unique: unique,
     updater: utils.updater
   };
+
+  // initalization of endpoints
+  let replayEndpoints = new ReplayEndpoints(networkingComponent, keychain, error,
+    jsonp_cb, _invoke_callback, _get_url_params);
+
+  SELF.replay = replayEndpoints.performReplay;
+
+  //
 
   function _poll_online() {
     _is_online() || _reset_offline(1, { error: 'Offline. Please check your network settings.' });
