@@ -411,6 +411,10 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _utils2 = _interopRequireDefault(_utils);
 
+	var _config = __webpack_require__(9);
+
+	var _config2 = _interopRequireDefault(_config);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var packageJSON = __webpack_require__(3);
@@ -538,16 +542,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	function PN_API(setup) {
 	  var xdr = setup.xdr;
-	  var subscribe_key = setup.subscribe_key;
-	  var publish_key = setup.publish_key;
-	  var ssl = setup.ssl;
-	  var origin = setup.origin;
-	  var auth_key = setup.auth_key;
 
 
-	  var keychain = new _keychain2.default().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+	  var keychain = new _keychain2.default().setInstanceId('').setAuthKey(setup.auth_key || '').setSubscribeKey(setup.subscribe_key).setPublishKey(setup.publish_key);
 
-	  var networkingComponent = new _networking2.default(xdr, keychain, ssl, origin);
+	  var configComponent = new _config2.default().setRequestIdConfig(setup.use_request_id || false).setInstanceIdConfig(setup.instance_id || false);
+
+	  var networkingComponent = new _networking2.default(setup.xdr, keychain, setup.ssl, setup.origin);
 
 	  var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
 	  var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;
@@ -589,8 +590,6 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var db = setup['db'] || { get: function get() {}, set: function set() {} };
 	  var CIPHER_KEY = setup['cipher_key'];
 	  var UUID = setup['uuid'] || !setup['unique_uuid'] && db && db['get'](keychain.getSubscribeKey() + 'uuid') || '';
-	  var USE_INSTANCEID = setup['instance_id'] || false;
-	  var INSTANCEID = '';
 	  var _shutdown = setup['shutdown'];
 	  var use_send_beacon = typeof setup['use_send_beacon'] != 'undefined' ? setup['use_send_beacon'] : true;
 	  var sendBeacon = use_send_beacon ? setup['sendBeacon'] : null;
@@ -848,7 +847,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (jsonp != '0') data['callback'] = jsonp;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', _utils2.default.encode(channel), 'leave'];
 
@@ -900,7 +901,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (channel_group && channel_group.length > 0) data['channel-group'] = channel_group;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', _utils2.default.encode(','), 'leave'];
 
@@ -1247,7 +1250,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var data = { uuid: UUID, auth: keychain.getAuthKey() };
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      networkingComponent.fetchTime(jsonp, {
 	        callback: jsonp,
@@ -1301,7 +1306,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (!store) params['store'] = '0';
 
-	      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        params['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      // Queue Message Send
 	      PUB_QUEUE[add_msg]({
@@ -1634,7 +1641,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	        if (PRESENCE_HB) data['heartbeat'] = PRESENCE_HB;
 
-	        if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	        if (configComponent.isInstanceIdEnabled()) {
+	          data['instanceid'] = keychain.getInstanceId();
+	        }
 
 	        start_presence_heartbeat();
 	        SUB_RECEIVER = xdr({
@@ -1809,7 +1818,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        !channel && url.push('channel') && url.push(',');
 	      }
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      xdr({
 	        callback: jsonp,
@@ -1844,7 +1855,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        data['callback'] = jsonp;
 	      }
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      xdr({
 	        callback: jsonp,
@@ -1895,7 +1908,9 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      data['state'] = JSON.stringify(state);
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      if (state) {
 	        url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub-key', keychain.getSubscribeKey(), 'channel', channel, 'uuid', uuid, 'data'];
@@ -2036,7 +2051,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	        params['remove'] = channel;
 	      }
 
-	      if (USE_INSTANCEID) params['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        params['instanceid'] = keychain.getInstanceId();
+	      }
 
 	      xdr({
 	        callback: jsonp,
@@ -2165,7 +2182,13 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!channels) channels = ',';
 	      if (channel_groups) data['channel-group'] = channel_groups;
 
-	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
+	      if (configComponent.isInstanceIdEnabled()) {
+	        data['instanceid'] = keychain.getInstanceId();
+	      }
+
+	      if (configComponent.isRequestIdEnabled()) {
+	        data['requestid'] = _utils2.default.generateUUID();
+	      }
 
 	      xdr({
 	        callback: jsonp,
@@ -2236,7 +2259,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  }
 
 	  if (!UUID) UUID = SELF['uuid']();
-	  if (!INSTANCEID) INSTANCEID = SELF['uuid']();
+	  if (!keychain.getInstanceId()) keychain.setInstanceId(SELF['uuid']());
 	  db['set'](keychain.getSubscribeKey() + 'uuid', UUID);
 
 	  _poll_timer = _utils2.default.timeout(_poll_online, SECOND);
@@ -2476,6 +2499,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	      return this;
 	    }
 	  }, {
+	    key: "setInstanceId",
+	    value: function setInstanceId(instanceId) {
+	      this._instanceId = instanceId;
+	      return this;
+	    }
+	  }, {
 	    key: "getSubscribeKey",
 	    value: function getSubscribeKey() {
 	      return this._subscribeKey;
@@ -2489,6 +2518,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    key: "getAuthKey",
 	    value: function getAuthKey() {
 	      return this._authKey;
+	    }
+	  }, {
+	    key: "getInstanceId",
+	    value: function getInstanceId() {
+	      return this._instanceId;
 	    }
 	  }]);
 
@@ -2723,6 +2757,59 @@ return /******/ (function(modules) { // webpackBootstrap
 		"PARAMSBIT": "&",
 		"URLBIT": "/"
 	};
+
+/***/ },
+/* 9 */
+/***/ function(module, exports) {
+
+	"use strict";
+
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var _class = function () {
+	  function _class() {
+	    _classCallCheck(this, _class);
+
+	    this._instanceId = false;
+	    this._requestId = false;
+	  }
+
+	  _createClass(_class, [{
+	    key: "setInstanceIdConfig",
+	    value: function setInstanceIdConfig(configValue) {
+	      this._instanceId = configValue;
+	      return this;
+	    }
+	  }, {
+	    key: "setRequestIdConfig",
+	    value: function setRequestIdConfig(configValue) {
+	      this._requestId = configValue;
+	      return this;
+	    }
+	  }, {
+	    key: "isInstanceIdEnabled",
+	    value: function isInstanceIdEnabled() {
+	      return this._instanceId;
+	    }
+	  }, {
+	    key: "isRequestIdEnabled",
+	    value: function isRequestIdEnabled() {
+	      return this._requestId;
+	    }
+	  }]);
+
+	  return _class;
+	}();
+
+	exports.default = _class;
+	//# sourceMappingURL=config.js.map
+
 
 /***/ }
 /******/ ])
