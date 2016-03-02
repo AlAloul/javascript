@@ -153,7 +153,7 @@ function PN_API(setup) {
   var xdr = setup.xdr;
 
 
-  var keychain = new _keychain2.default().setInstanceId('').setAuthKey(setup.auth_key || '').setSubscribeKey(setup.subscribe_key).setPublishKey(setup.publish_key);
+  var keychain = new _keychain2.default().setInstanceId('').setAuthKey(setup.auth_key || '').setSecretKey(setup.secret_key || '').setSubscribeKey(setup.subscribe_key).setPublishKey(setup.publish_key);
 
   var configComponent = new _config2.default().setRequestIdConfig(setup.use_request_id || false).setInstanceIdConfig(setup.instance_id || false);
 
@@ -164,7 +164,6 @@ function PN_API(setup) {
   var KEEPALIVE = (+setup['keepalive'] || DEF_KEEPALIVE) * SECOND;
   var TIME_CHECK = setup['timecheck'] || 0;
   var NOLEAVE = setup['noleave'] || 0;
-  var SECRET_KEY = setup['secret_key'] || '';
   var hmac_SHA256 = setup['hmac_SHA256'];
   var SSL = setup['ssl'] ? 's' : '';
   var CONNECT = function CONNECT() {};
@@ -1567,7 +1566,7 @@ function PN_API(setup) {
       if (!callback) return _error('Missing Callback');
       if (!keychain.getSubscribeKey()) return _error('Missing Subscribe Key');
       if (!keychain.getPublishKey()) return _error('Missing Publish Key');
-      if (!SECRET_KEY) return _error('Missing Secret Key');
+      if (!keychain.getSecretKey()) return _error('Missing Secret Key');
 
       var timestamp = Math.floor(new Date().getTime() / 1000);
       var sign_input = keychain.getSubscribeKey() + '\n' + keychain.getPublishKey() + '\n' + 'grant' + '\n';
@@ -1600,7 +1599,7 @@ function PN_API(setup) {
 
       sign_input += _get_pam_sign_input_from_params(data);
 
-      var signature = hmac_SHA256(sign_input, SECRET_KEY);
+      var signature = hmac_SHA256(sign_input, keychain.getSecretKey());
 
       signature = signature.replace(/\+/g, '-');
       signature = signature.replace(/\//g, '_');
@@ -1699,7 +1698,7 @@ function PN_API(setup) {
       if (!callback) return _error('Missing Callback');
       if (!keychain.getSubscribeKey()) return _error('Missing Subscribe Key');
       if (!keychain.getPublishKey()) return _error('Missing Publish Key');
-      if (!SECRET_KEY) return _error('Missing Secret Key');
+      if (!keychain.getSecretKey()) return _error('Missing Secret Key');
 
       var timestamp = Math.floor(new Date().getTime() / 1000);
       var sign_input = keychain.getSubscribeKey() + '\n' + keychain.getPublishKey() + '\n' + 'audit' + '\n';
@@ -1720,7 +1719,7 @@ function PN_API(setup) {
 
       sign_input += _get_pam_sign_input_from_params(data);
 
-      var signature = hmac_SHA256(sign_input, SECRET_KEY);
+      var signature = hmac_SHA256(sign_input, keychain.getSecretKey());
 
       signature = signature.replace(/\+/g, '-');
       signature = signature.replace(/\//g, '_');
