@@ -407,11 +407,14 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _keychain2 = _interopRequireDefault(_keychain);
 
+	var _utils = __webpack_require__(7);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	var packageJSON = __webpack_require__(3);
 	var defaultConfiguration = __webpack_require__(8);
-	var utils = __webpack_require__(7);
 
 	var NOW = 1;
 	var READY = false;
@@ -440,7 +443,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function generate_channel_list(channels, nopresence) {
 	  var list = [];
-	  utils.each(channels, function (channel, status) {
+	  _utils2.default.each(channels, function (channel, status) {
 	    if (nopresence) {
 	      if (channel.search('-pnpres') < 0) {
 	        if (status.subscribed) list.push(channel);
@@ -459,7 +462,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	 */
 	function generate_channel_group_list(channel_groups, nopresence) {
 	  var list = [];
-	  utils.each(channel_groups, function (channel_group, status) {
+	  _utils2.default.each(channel_groups, function (channel_group, status) {
 	    if (nopresence) {
 	      if (channel_group.search('-pnpres') < 0) {
 	        if (status.subscribed) list.push(channel_group);
@@ -475,7 +478,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	function ready() {
 	  if (READY) return;
 	  READY = 1;
-	  utils.each(READY_BUFFER, function (connect) {
+	  _utils2.default.each(READY_BUFFER, function (connect) {
 	    connect();
 	  });
 	}
@@ -607,7 +610,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _get_url_params(data) {
 	    if (!data) data = {};
-	    utils.each(params, function (key, value) {
+	    _utils2.default.each(params, function (key, value) {
 	      if (!(key in data)) data[key] = value;
 	    });
 	    return data;
@@ -615,7 +618,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	  function _object_to_key_list(o) {
 	    var l = [];
-	    utils.each(o, function (key, value) {
+	    _utils2.default.each(o, function (key, value) {
 	      l.push(key);
 	    });
 	    return l;
@@ -631,7 +634,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	    for (var i in l) {
 	      var k = l[i];
-	      si += k + '=' + utils.pamEncode(params[k]);
+	      si += k + '=' + _utils2.default.pamEncode(params[k]);
 	      if (i != l.length - 1) si += '&';
 	    }
 	    return si;
@@ -690,11 +693,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	    PRESENCE_HB_RUNNING = true;
 	    SELF['presence_heartbeat']({
 	      callback: function callback(r) {
-	        PRESENCE_HB_TIMEOUT = utils.timeout(_presence_heartbeat, PRESENCE_HB_INTERVAL * SECOND);
+	        PRESENCE_HB_TIMEOUT = _utils2.default.timeout(_presence_heartbeat, PRESENCE_HB_INTERVAL * SECOND);
 	      },
 	      error: function error(e) {
 	        _error && _error('Presence Heartbeat unable to reach Pubnub servers.' + JSON.stringify(e));
-	        PRESENCE_HB_TIMEOUT = utils.timeout(_presence_heartbeat, PRESENCE_HB_INTERVAL * SECOND);
+	        PRESENCE_HB_TIMEOUT = _utils2.default.timeout(_presence_heartbeat, PRESENCE_HB_INTERVAL * SECOND);
 	      }
 	    });
 	  }
@@ -718,7 +721,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function each_channel_group(callback) {
 	    var count = 0;
 
-	    utils.each(generate_channel_group_list(CHANNEL_GROUPS), function (channel_group) {
+	    _utils2.default.each(generate_channel_group_list(CHANNEL_GROUPS), function (channel_group) {
 	      var chang = CHANNEL_GROUPS[channel_group];
 
 	      if (!chang) return;
@@ -733,7 +736,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  function each_channel(callback) {
 	    var count = 0;
 
-	    utils.each(generate_channel_list(CHANNELS), function (channel) {
+	    _utils2.default.each(generate_channel_list(CHANNELS), function (channel) {
 	      var chan = CHANNELS[channel];
 
 	      if (!chan) return;
@@ -847,12 +850,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
 
-	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', utils.encode(channel), 'leave'];
+	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', _utils2.default.encode(channel), 'leave'];
 
 	      params = _get_url_params(data);
 
 	      if (sendBeacon) {
-	        var url_string = utils.buildURL(url, params);
+	        var url_string = _utils2.default.buildURL(url, params);
 	        if (sendBeacon(url_string)) {
 	          callback && callback({ status: 200, action: 'leave', message: 'OK', service: 'Presence' });
 	          return true;
@@ -899,12 +902,12 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      if (USE_INSTANCEID) data['instanceid'] = INSTANCEID;
 
-	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', utils.encode(','), 'leave'];
+	      url = [origin, 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'channel', _utils2.default.encode(','), 'leave'];
 
 	      params = _get_url_params(data);
 
 	      if (sendBeacon) {
-	        var url_string = utils.buildURL(url, params);
+	        var url_string = _utils2.default.buildURL(url, params);
 	        if (sendBeacon(url_string)) {
 	          callback && callback({ status: 200, action: 'leave', message: 'OK', service: 'Presence' });
 	          return true;
@@ -1016,7 +1019,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 	      }
 
-	      namespace && url.push('namespace') && url.push(utils.encode(namespace));
+	      namespace && url.push('namespace') && url.push(_utils2.default.encode(namespace));
 
 	      url.push('channel-group');
 
@@ -1025,7 +1028,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (channels) {
-	        if (utils.isArray(channels)) {
+	        if (_utils2.default.isArray(channels)) {
 	          channels = channels.join(',');
 	        }
 	        data[mode] = channels;
@@ -1294,7 +1297,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      msg = JSON.stringify(encrypt(msg, cipher_key));
 
 	      // Create URL
-	      url = [networkingComponent.getStandardOrigin(), 'publish', keychain.getPublishKey(), keychain.getSubscribeKey(), 0, utils.encode(channel), jsonp, utils.encode(msg)];
+	      url = [networkingComponent.getStandardOrigin(), 'publish', keychain.getPublishKey(), keychain.getSubscribeKey(), 0, _utils2.default.encode(channel), jsonp, _utils2.default.encode(msg)];
 
 	      if (!store) params['store'] = '0';
 
@@ -1337,11 +1340,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (!keychain.getSubscribeKey()) return _error('Missing Subscribe Key');
 
 	      if (channelArg) {
-	        var channels = utils.isArray(channelArg) ? channelArg : ('' + channelArg).split(',');
+	        var channels = _utils2.default.isArray(channelArg) ? channelArg : ('' + channelArg).split(',');
 	        var existingChannels = [];
 	        var presenceChannels = [];
 
-	        utils.each(channels, function (channel) {
+	        _utils2.default.each(channels, function (channel) {
 	          if (CHANNELS[channel]) existingChannels.push(channel);
 	        });
 
@@ -1352,11 +1355,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Prepare presence channels
-	        utils.each(existingChannels, function (channel) {
+	        _utils2.default.each(existingChannels, function (channel) {
 	          presenceChannels.push(channel + PRESENCE_SUFFIX);
 	        });
 
-	        utils.each(existingChannels.concat(presenceChannels), function (channel) {
+	        _utils2.default.each(existingChannels.concat(presenceChannels), function (channel) {
 	          if (channel in CHANNELS) CHANNELS[channel] = 0;
 	          if (channel in STATE) delete STATE[channel];
 	        });
@@ -1369,11 +1372,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	      }
 
 	      if (channelGroupArg) {
-	        var channelGroups = utils.isArray(channelGroupArg) ? channelGroupArg : ('' + channelGroupArg).split(',');
+	        var channelGroups = _utils2.default.isArray(channelGroupArg) ? channelGroupArg : ('' + channelGroupArg).split(',');
 	        var existingChannelGroups = [];
 	        var presenceChannelGroups = [];
 
-	        utils.each(channelGroups, function (channelGroup) {
+	        _utils2.default.each(channelGroups, function (channelGroup) {
 	          if (CHANNEL_GROUPS[channelGroup]) existingChannelGroups.push(channelGroup);
 	        });
 
@@ -1384,11 +1387,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	        }
 
 	        // Prepare presence channels
-	        utils.each(existingChannelGroups, function (channelGroup) {
+	        _utils2.default.each(existingChannelGroups, function (channelGroup) {
 	          presenceChannelGroups.push(channelGroup + PRESENCE_SUFFIX);
 	        });
 
-	        utils.each(existingChannelGroups.concat(presenceChannelGroups), function (channelGroup) {
+	        _utils2.default.each(existingChannelGroups.concat(presenceChannelGroups), function (channelGroup) {
 	          if (channelGroup in CHANNEL_GROUPS) CHANNEL_GROUPS[channelGroup] = 0;
 	          if (channelGroup in STATE) delete STATE[channelGroup];
 	        });
@@ -1453,7 +1456,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // Setup Channel(s)
 	      if (channel) {
-	        utils.each((channel.join ? channel.join(',') : '' + channel).split(','), function (channel) {
+	        _utils2.default.each((channel.join ? channel.join(',') : '' + channel).split(','), function (channel) {
 	          var settings = CHANNELS[channel] || {};
 
 	          // Store Channel State
@@ -1496,11 +1499,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            channel: channel,
 	            data: _get_url_params({ uuid: UUID, auth: keychain.getAuthKey() }),
 	            callback: function callback(here) {
-	              utils.each('uuids' in here ? here['uuids'] : [], function (uid) {
+	              _utils2.default.each('uuids' in here ? here['uuids'] : [], function (uid) {
 	                presence({
 	                  action: 'join',
 	                  uuid: uid,
-	                  timestamp: Math.floor(utils.rnow() / 1000),
+	                  timestamp: Math.floor(_utils2.default.rnow() / 1000),
 	                  occupancy: here['occupancy'] || 1
 	                }, here, channel);
 	              });
@@ -1511,7 +1514,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      // Setup Channel Groups
 	      if (channel_group) {
-	        utils.each((channel_group.join ? channel_group.join(',') : '' + channel_group).split(','), function (channel_group) {
+	        _utils2.default.each((channel_group.join ? channel_group.join(',') : '' + channel_group).split(','), function (channel_group) {
 	          var settings = CHANNEL_GROUPS[channel_group] || {};
 
 	          CHANNEL_GROUPS[channel_group] = {
@@ -1546,11 +1549,11 @@ return /******/ (function(modules) { // webpackBootstrap
 	            channel_group: channel_group,
 	            data: _get_url_params({ uuid: UUID, auth: keychain.getAuthKey() }),
 	            callback: function callback(here) {
-	              utils.each('uuids' in here ? here['uuids'] : [], function (uid) {
+	              _utils2.default.each('uuids' in here ? here['uuids'] : [], function (uid) {
 	                presence({
 	                  action: 'join',
 	                  uuid: uid,
-	                  timestamp: Math.floor(utils.rnow() / 1000),
+	                  timestamp: Math.floor(_utils2.default.rnow() / 1000),
 	                  occupancy: here['occupancy'] || 1
 	                }, here, channel_group);
 	              });
@@ -1563,14 +1566,14 @@ return /******/ (function(modules) { // webpackBootstrap
 	      function _test_connection(success) {
 	        if (success) {
 	          // Begin Next Socket Connection
-	          utils.timeout(CONNECT, windowing);
+	          _utils2.default.timeout(CONNECT, windowing);
 	        } else {
 	          // New Origin on Failed Connection
 	          networkingComponent.shiftStandardOrigin(true);
 	          networkingComponent.shiftSubscribeOrigin(true);
 
 	          // Re-test Connection
-	          utils.timeout(function () {
+	          _utils2.default.timeout(function () {
 	            SELF['time'](_test_connection);
 	          }, SECOND);
 	        }
@@ -1649,12 +1652,12 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }
 	          },
 	          data: _get_url_params(data),
-	          url: [networkingComponent.getSubscribeOrigin(), 'subscribe', keychain.getSubscribeKey(), utils.encode(channels), jsonp, TIMETOKEN],
+	          url: [networkingComponent.getSubscribeOrigin(), 'subscribe', keychain.getSubscribeKey(), _utils2.default.encode(channels), jsonp, TIMETOKEN],
 	          success: function success(messages) {
 	            // Check for Errors
 	            if (!messages || (typeof messages === 'undefined' ? 'undefined' : _typeof(messages)) == 'object' && 'error' in messages && messages['error']) {
 	              SUB_ERROR(messages);
-	              return utils.timeout(CONNECT, SECOND);
+	              return _utils2.default.timeout(CONNECT, SECOND);
 	            }
 
 	            // User Idle Callback
@@ -1691,7 +1694,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	              RESUMED = false;
 	              // Update Saved Timetoken
 	              db['set'](keychain.getSubscribeKey(), 0);
-	              utils.timeout(_connect, windowing);
+	              _utils2.default.timeout(_connect, windowing);
 	              return;
 	            }
 
@@ -1716,8 +1719,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	              } else if (messages.length > 2) {
 	                channels = messages[2];
 	              } else {
-	                channels = utils.map(generate_channel_list(CHANNELS), function (chan) {
-	                  return utils.map(Array(messages[0].length).join(',').split(','), function () {
+	                channels = _utils2.default.map(generate_channel_list(CHANNELS), function (chan) {
+	                  return _utils2.default.map(Array(messages[0].length).join(',').split(','), function () {
 	                    return chan;
 	                  });
 	                }).join(',');
@@ -1748,20 +1751,20 @@ return /******/ (function(modules) { // webpackBootstrap
 	            }();
 
 	            var latency = detect_latency(+messages[1]);
-	            utils.each(messages[0], function (msg) {
+	            _utils2.default.each(messages[0], function (msg) {
 	              var next = next_callback();
 	              var decrypted_msg = decrypt(msg, CHANNELS[next[1]] ? CHANNELS[next[1]]['cipher_key'] : null);
 	              next[0] && next[0](decrypted_msg, messages, next[2] || next[1], latency, next[1]);
 	            });
 
-	            utils.timeout(_connect, windowing);
+	            _utils2.default.timeout(_connect, windowing);
 	          }
 	        });
 	      }
 
 	      CONNECT = function CONNECT() {
 	        _reset_offline();
-	        utils.timeout(_connect, windowing);
+	        _utils2.default.timeout(_connect, windowing);
 	      };
 
 	      // Reduce Status Flicker
@@ -1795,7 +1798,7 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	      var url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub_key', keychain.getSubscribeKey()];
 
-	      channel && url.push('channel') && url.push(utils.encode(channel));
+	      channel && url.push('channel') && url.push(_utils2.default.encode(channel));
 
 	      if (jsonp != '0') {
 	        data['callback'] = jsonp;
@@ -1852,7 +1855,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        fail: function fail(response) {
 	          _invoke_error(response, err);
 	        },
-	        url: [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'uuid', utils.encode(uuid)]
+	        url: [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub_key', keychain.getSubscribeKey(), 'uuid', _utils2.default.encode(uuid)]
 	      });
 	    },
 
@@ -1897,7 +1900,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (state) {
 	        url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub-key', keychain.getSubscribeKey(), 'channel', channel, 'uuid', uuid, 'data'];
 	      } else {
-	        url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub-key', keychain.getSubscribeKey(), 'channel', channel, 'uuid', utils.encode(uuid)];
+	        url = [networkingComponent.getStandardOrigin(), 'v2', 'presence', 'sub-key', keychain.getSubscribeKey(), 'channel', channel, 'uuid', _utils2.default.encode(uuid)];
 	      }
 
 	      xdr({
@@ -1950,10 +1953,10 @@ return /******/ (function(modules) { // webpackBootstrap
 	      if (args['manage']) {
 	        data['m'] = m;
 	      }
-	      if (utils.isArray(channel)) {
+	      if (_utils2.default.isArray(channel)) {
 	        channel = channel['join'](',');
 	      }
-	      if (utils.isArray(auth_key)) {
+	      if (_utils2.default.isArray(auth_key)) {
 	        auth_key = auth_key['join'](',');
 	      }
 	      if (typeof channel != 'undefined' && channel != null && channel.length > 0) data['channel'] = channel;
@@ -2134,7 +2137,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	    },
 
 	    isArray: function isArray(arg) {
-	      return utils.isArray(arg);
+	      return _utils2.default.isArray(arg);
 	    },
 
 	    get_subscribed_channels: function get_subscribed_channels() {
@@ -2156,7 +2159,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        data['callback'] = jsonp;
 	      }
 
-	      var channels = utils.encode(generate_channel_list(CHANNELS, true)['join'](','));
+	      var channels = _utils2.default.encode(generate_channel_list(CHANNELS, true)['join'](','));
 	      var channel_groups = generate_channel_group_list(CHANNEL_GROUPS, true)['join'](',');
 
 	      if (!channels) channels = ',';
@@ -2192,24 +2195,24 @@ return /******/ (function(modules) { // webpackBootstrap
 	    xdr: xdr,
 	    ready: ready,
 	    db: db,
-	    uuid: utils.generateUUID,
-	    map: utils.map,
-	    each: utils.each,
+	    uuid: _utils2.default.generateUUID,
+	    map: _utils2.default.map,
+	    each: _utils2.default.each,
 	    'each-channel': each_channel,
-	    grep: utils.grep,
+	    grep: _utils2.default.grep,
 	    offline: function offline() {
 	      _reset_offline(1, { message: 'Offline. Please check your network settings.' });
 	    },
-	    supplant: utils.supplant,
-	    now: utils.rnow,
+	    supplant: _utils2.default.supplant,
+	    now: _utils2.default.rnow,
 	    unique: unique,
-	    updater: utils.updater
+	    updater: _utils2.default.updater
 	  };
 
 	  function _poll_online() {
 	    _is_online() || _reset_offline(1, { error: 'Offline. Please check your network settings.' });
 	    _poll_timer && clearTimeout(_poll_timer);
-	    _poll_timer = utils.timeout(_poll_online, SECOND);
+	    _poll_timer = _utils2.default.timeout(_poll_online, SECOND);
 	  }
 
 	  function _poll_online2() {
@@ -2220,7 +2223,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        error: 'Heartbeat failed to connect to Pubnub Servers.' + 'Please check your network settings.'
 	      });
 	      _poll_timer2 && clearTimeout(_poll_timer2);
-	      _poll_timer2 = utils.timeout(_poll_online2, KEEPALIVE);
+	      _poll_timer2 = _utils2.default.timeout(_poll_online2, KEEPALIVE);
 	    });
 	  }
 
@@ -2236,27 +2239,27 @@ return /******/ (function(modules) { // webpackBootstrap
 	  if (!INSTANCEID) INSTANCEID = SELF['uuid']();
 	  db['set'](keychain.getSubscribeKey() + 'uuid', UUID);
 
-	  _poll_timer = utils.timeout(_poll_online, SECOND);
-	  _poll_timer2 = utils.timeout(_poll_online2, KEEPALIVE);
-	  PRESENCE_HB_TIMEOUT = utils.timeout(start_presence_heartbeat, (PRESENCE_HB_INTERVAL - 3) * SECOND);
+	  _poll_timer = _utils2.default.timeout(_poll_online, SECOND);
+	  _poll_timer2 = _utils2.default.timeout(_poll_online2, KEEPALIVE);
+	  PRESENCE_HB_TIMEOUT = _utils2.default.timeout(start_presence_heartbeat, (PRESENCE_HB_INTERVAL - 3) * SECOND);
 
 	  // Detect Age of Message
 	  function detect_latency(tt) {
-	    var adjusted_time = utils.rnow() - TIME_DRIFT;
+	    var adjusted_time = _utils2.default.rnow() - TIME_DRIFT;
 	    return adjusted_time - tt / 10000;
 	  }
 
 	  detect_time_detla();
 	  function detect_time_detla(cb, time) {
-	    var stime = utils.rnow();
+	    var stime = _utils2.default.rnow();
 
 	    time && calculate(time) || SELF['time'](calculate);
 
 	    function calculate(time) {
 	      if (!time) return;
 	      var ptime = time / 10000;
-	      var latency = (utils.rnow() - stime) / 2;
-	      TIME_DRIFT = utils.rnow() - (ptime + latency);
+	      var latency = (_utils2.default.rnow() - stime) / 2;
+	      TIME_DRIFT = _utils2.default.rnow() - (ptime + latency);
 	      cb && cb(TIME_DRIFT);
 	    }
 	  }
@@ -2269,16 +2272,16 @@ return /******/ (function(modules) { // webpackBootstrap
 	  unique: unique,
 	  PNmessage: PNmessage,
 	  DEF_TIMEOUT: DEF_TIMEOUT,
-	  timeout: utils.timeout,
-	  build_url: utils.buildURL,
-	  each: utils.each,
-	  uuid: utils.generateUUID,
+	  timeout: _utils2.default.timeout,
+	  build_url: _utils2.default.buildURL,
+	  each: _utils2.default.each,
+	  uuid: _utils2.default.generateUUID,
 	  URLBIT: defaultConfiguration.URLBIT,
-	  grep: utils.grep,
-	  supplant: utils.supplant,
-	  now: utils.rnow,
-	  updater: utils.updater,
-	  map: utils.map
+	  grep: _utils2.default.grep,
+	  supplant: _utils2.default.supplant,
+	  now: _utils2.default.rnow,
+	  updater: _utils2.default.updater,
+	  map: _utils2.default.map
 	};
 	//# sourceMappingURL=pubnub-common.js.map
 
@@ -2299,11 +2302,13 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	var _keychain2 = _interopRequireDefault(_keychain);
 
+	var _utils = __webpack_require__(7);
+
+	var _utils2 = _interopRequireDefault(_utils);
+
 	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
-
-	var utils = __webpack_require__(7);
 
 	var _class = function () {
 	  function _class(xdr, keychain) {
@@ -2336,7 +2341,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var newSubDomain = undefined;
 
 	      if (failover) {
-	        newSubDomain = utils.generateUUID().split('-')[0];
+	        newSubDomain = _utils2.default.generateUUID().split('-')[0];
 	      } else {
 	        this._currentSubDomain = this._currentSubDomain + 1;
 
@@ -2381,7 +2386,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	      var success = _ref.success;
 	      var fail = _ref.fail;
 
-	      var url = [this.getStandardOrigin(), 'v2', 'history', 'sub-key', this._keychain.getSubscribeKey(), 'channel', utils.encode(channel)];
+	      var url = [this.getStandardOrigin(), 'v2', 'history', 'sub-key', this._keychain.getSubscribeKey(), 'channel', _utils2.default.encode(channel)];
 
 	      this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
 	    }
@@ -2500,178 +2505,213 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
+	Object.defineProperty(exports, "__esModule", {
+	  value: true
+	});
+
 	var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol" ? function (obj) { return typeof obj; } : function (obj) { return obj && typeof Symbol === "function" && obj.constructor === Symbol ? "symbol" : typeof obj; };
+
+	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
+
+	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
 	/* eslint no-unused-expressions: 0, block-scoped-var: 0, no-redeclare: 0, guard-for-in: 0 */
 
 	var defaultConfiguration = __webpack_require__(8);
 	var REPL = /{([\w\-]+)}/g;
 
-	function rnow() {
-	  return +new Date();
-	}
-
-	function isArray(arg) {
-	  return !!arg && typeof arg !== 'string' && (Array.isArray && Array.isArray(arg) || typeof arg.length === 'number');
-	  // return !!arg && (Array.isArray && Array.isArray(arg) || typeof(arg.length) === "number")
-	}
-
-	/**
-	 * EACH
-	 * ====
-	 * each( [1,2,3], function(item) { } )
-	 */
-	function each(o, f) {
-	  if (!o || !f) {
-	    return;
+	var _class = function () {
+	  function _class() {
+	    _classCallCheck(this, _class);
 	  }
 
-	  if (isArray(o)) {
-	    for (var i = 0, l = o.length; i < l;) {
-	      f.call(o[i], o[i], i++);
+	  _createClass(_class, null, [{
+	    key: 'rnow',
+	    value: function rnow() {
+	      return +new Date();
 	    }
-	  } else {
-	    for (var i in o) {
-	      o.hasOwnProperty && o.hasOwnProperty(i) && f.call(o[i], i, o[i]);
+
+	    /**
+	     * ENCODE
+	     * ======
+	     * var encoded_data = encode('path');
+	     */
+
+	  }, {
+	    key: 'encode',
+	    value: function encode(path) {
+	      return encodeURIComponent(path);
 	    }
-	  }
-	}
-
-	/**
-	 * ENCODE
-	 * ======
-	 * var encoded_data = encode('path');
-	 */
-	function encode(path) {
-	  return encodeURIComponent(path);
-	}
-
-	/**
-	 * Build Url
-	 * =======
-	 *
-	 */
-	function buildURL(urlComponents, urlParams) {
-	  var url = urlComponents.join(defaultConfiguration.URLBIT);
-	  var params = [];
-
-	  if (!urlParams) return url;
-
-	  each(urlParams, function (key, value) {
-	    var valueStr = (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? JSON['stringify'](value) : value;
-	    typeof value !== 'undefined' && value !== null && encode(valueStr).length > 0 && params.push(key + '=' + encode(valueStr));
-	  });
-
-	  url += '?' + params.join(defaultConfiguration.PARAMSBIT);
-	  return url;
-	}
-
-	/**
-	 * UPDATER
-	 * =======
-	 * var timestamp = unique();
-	 */
-	function updater(fun, rate) {
-	  var timeout;
-	  var last = 0;
-	  var runnit = function runnit() {
-	    if (last + rate > rnow()) {
-	      clearTimeout(timeout);
-	      timeout = setTimeout(runnit, rate);
-	    } else {
-	      last = rnow();
-	      fun();
+	  }, {
+	    key: 'isArray',
+	    value: function isArray(arg) {
+	      return !!arg && typeof arg !== 'string' && (Array.isArray && Array.isArray(arg) || typeof arg.length === 'number');
+	      // return !!arg && (Array.isArray && Array.isArray(arg) || typeof(arg.length) === "number")
 	    }
-	  };
 
-	  return runnit;
-	}
+	    /**
+	     * SUPPLANT
+	     * ========
+	     * var text = supplant( 'Hello {name}!', { name : 'John' } )
+	     */
 
-	/**
-	 * GREP
-	 * ====
-	 * var list = grep( [1,2,3], function(item) { return item % 2 } )
-	 */
-	function grep(list, fun) {
-	  var fin = [];
-	  each(list || [], function (l) {
-	    fun(l) && fin.push(l);
-	  });
-	  return fin;
-	}
+	  }, {
+	    key: 'supplant',
+	    value: function supplant(str, values) {
+	      return str.replace(REPL, function (_, match) {
+	        return values[match] || _;
+	      });
+	    }
 
-	/**
-	 * SUPPLANT
-	 * ========
-	 * var text = supplant( 'Hello {name}!', { name : 'John' } )
-	 */
-	function supplant(str, values) {
-	  return str.replace(REPL, function (_, match) {
-	    return values[match] || _;
-	  });
-	}
+	    /**
+	     * Build Url
+	     * =======
+	     *
+	     */
 
-	/**
-	 * timeout
-	 * =======
-	 * timeout( function(){}, 100 );
-	 */
-	function timeout(fun, wait) {
-	  if (typeof setTimeout === 'undefined') {
-	    return;
-	  }
+	  }, {
+	    key: 'buildURL',
+	    value: function buildURL(urlComponents, urlParams) {
+	      var url = urlComponents.join(defaultConfiguration.URLBIT);
+	      var params = [];
 
-	  return setTimeout(fun, wait);
-	}
+	      if (!urlParams) return url;
 
-	/**
-	 * uuid
-	 * ====
-	 * var my_uuid = generateUUID();
-	 */
-	function generateUUID(callback) {
-	  var u = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
-	    var r = Math.random() * 16 | 0;
-	    var v = c === 'x' ? r : r & 0x3 | 0x8;
-	    return v.toString(16);
-	  });
-	  if (callback) callback(u);
-	  return u;
-	}
+	      this.each(urlParams, function (key, value) {
+	        var valueStr = (typeof value === 'undefined' ? 'undefined' : _typeof(value)) === 'object' ? JSON.stringify(value) : value;
+	        typeof value !== 'undefined' && value !== null && this.encode(valueStr).length > 0 && params.push(key + '=' + this.encode(valueStr));
+	      });
 
-	/**
-	 * MAP
-	 * ===
-	 * var list = map( [1,2,3], function(item) { return item + 1 } )
-	 */
-	function map(list, fun) {
-	  var fin = [];
-	  each(list || [], function (k, v) {
-	    fin.push(fun(k, v));
-	  });
-	  return fin;
-	}
+	      url += '?' + params.join(defaultConfiguration.PARAMSBIT);
+	      return url;
+	    }
 
-	function pamEncode(str) {
-	  return encodeURIComponent(str).replace(/[!'()*~]/g, function (c) {
-	    return '%' + c.charCodeAt(0).toString(16).toUpperCase();
-	  });
-	}
+	    /**
+	     * EACH
+	     * ====
+	     * each( [1,2,3], function(item) { } )
+	     */
 
-	module.exports = {
-	  buildURL: buildURL,
-	  encode: encode,
-	  each: each,
-	  updater: updater,
-	  rnow: rnow,
-	  isArray: isArray,
-	  map: map,
-	  pamEncode: pamEncode,
-	  generateUUID: generateUUID,
-	  timeout: timeout,
-	  supplant: supplant,
-	  grep: grep
-	};
+	  }, {
+	    key: 'each',
+	    value: function each(o, f) {
+	      if (!o || !f) {
+	        return;
+	      }
+
+	      if (this.isArray(o)) {
+	        for (var i = 0, l = o.length; i < l;) {
+	          f.call(o[i], o[i], i++);
+	        }
+	      } else {
+	        for (var i in o) {
+	          o.hasOwnProperty && o.hasOwnProperty(i) && f.call(o[i], i, o[i]);
+	        }
+	      }
+	    }
+
+	    /**
+	     * UPDATER
+	     * =======
+	     * var timestamp = unique();
+	     */
+
+	  }, {
+	    key: 'updater',
+	    value: function updater(fun, rate) {
+	      var timeout;
+	      var last = 0;
+	      var runnit = function runnit() {
+	        if (last + rate > this.rnow()) {
+	          clearTimeout(timeout);
+	          timeout = setTimeout(runnit, rate);
+	        } else {
+	          last = this.rnow();
+	          fun();
+	        }
+	      };
+
+	      return runnit;
+	    }
+
+	    /**
+	     * GREP
+	     * ====
+	     * var list = grep( [1,2,3], function(item) { return item % 2 } )
+	     */
+
+	  }, {
+	    key: 'grep',
+	    value: function grep(list, fun) {
+	      var fin = [];
+	      this.each(list || [], function (l) {
+	        fun(l) && fin.push(l);
+	      });
+	      return fin;
+	    }
+
+	    /**
+	     * timeout
+	     * =======
+	     * timeout( function(){}, 100 );
+	     */
+
+	  }, {
+	    key: 'timeout',
+	    value: function timeout(fun, wait) {
+	      if (typeof setTimeout === 'undefined') {
+	        return;
+	      }
+
+	      return setTimeout(fun, wait);
+	    }
+
+	    /**
+	     * uuid
+	     * ====
+	     * var my_uuid = generateUUID();
+	     */
+
+	  }, {
+	    key: 'generateUUID',
+	    value: function generateUUID(callback) {
+	      var u = 'xxxxxxxx-xxxx-4xxx-yxxx-xxxxxxxxxxxx'.replace(/[xy]/g, function (c) {
+	        var r = Math.random() * 16 | 0;
+	        var v = c === 'x' ? r : r & 0x3 | 0x8;
+	        return v.toString(16);
+	      });
+	      if (callback) callback(u);
+	      return u;
+	    }
+
+	    /**
+	     * MAP
+	     * ===
+	     * var list = map( [1,2,3], function(item) { return item + 1 } )
+	     */
+
+	  }, {
+	    key: 'map',
+	    value: function map(list, fun) {
+	      var fin = [];
+	      this.each(list || [], function (k, v) {
+	        fin.push(fun(k, v));
+	      });
+	      return fin;
+	    }
+	  }, {
+	    key: 'pamEncode',
+	    value: function pamEncode(str) {
+	      return encodeURIComponent(str).replace(/[!'()*~]/g, function (c) {
+	        return '%' + c.charCodeAt(0).toString(16).toUpperCase();
+	      });
+	    }
+	  }]);
+
+	  return _class;
+	}();
+
+	exports.default = _class;
 	//# sourceMappingURL=utils.js.map
 
 

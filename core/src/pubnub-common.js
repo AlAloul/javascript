@@ -8,10 +8,10 @@
 
 import Networking from './components/networking';
 import Keychain from './components/keychain';
+import utils from './utils';
 
 var packageJSON = require('../../package.json');
 var defaultConfiguration = require('../defaults.json');
-var utils = require('./utils');
 
 var NOW = 1;
 var READY = false;

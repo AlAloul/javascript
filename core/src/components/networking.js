@@ -1,9 +1,7 @@
 /* @flow */
 
 import Keychain from './keychain.js';
-
-const utils = require('../utils');
-
+import utils from '../utils';
 
 type commonXDRObject = {data: Object, callback: Function, success: Function, fail: Function};
 
