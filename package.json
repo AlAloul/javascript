@@ -33,6 +33,7 @@
   ],
   "dependencies": {
     "agentkeepalive": "~0.2",
+    "babel-polyfill": "^6.6.1",
     "lodash": "^4.1.0",
     "uuid": "^2.0.1"
   },

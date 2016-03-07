@@ -35,6 +35,8 @@ var XDR = require('./lib/xdr');
 var packageJSON = require('../package.json');
 var crypto = require('crypto');
 
+require('babel-polyfill');
+
 /**
  * UTIL LOCALS
  */
