@@ -1,13 +1,13 @@
 /* @flow */
 
-import Keychain from './keychain.js';
+const Keychain = require('./keychain.js');
 
 const utils = require('../utils');
 
 
 type commonXDRObject = {data: Object, callback: Function, success: Function, fail: Function};
 
-export default class {
+let Networking = class {
 
   _xdr: Function;
   _keychain: Keychain;
@@ -106,4 +106,6 @@ export default class {
     return this._subscribeOrigin;
   }
 
-}
+};
+
+module.exports = Networking;

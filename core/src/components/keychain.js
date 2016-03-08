@@ -1,6 +1,6 @@
 /* @flow */
 
-export default class {
+let Keychain = class {
 
   _subscribeKey: string;
   _publishKey: string;
@@ -33,4 +33,6 @@ export default class {
     return this._authKey;
   }
 
-}
+};
+
+module.exports = Keychain;

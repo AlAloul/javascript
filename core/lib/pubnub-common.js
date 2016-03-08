@@ -8,15 +8,8 @@ var _typeof = typeof Symbol === "function" && typeof Symbol.iterator === "symbol
 /* eslint guard-for-in: 0 */
 /* eslint block-scoped-var: 0 space-return-throw-case: 0, no-unused-vars: 0 */
 
-var _networking = require('./components/networking');
-
-var _networking2 = _interopRequireDefault(_networking);
-
-var _keychain = require('./components/keychain');
-
-var _keychain2 = _interopRequireDefault(_keychain);
-
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+var Networking = require('./components/networking');
+var Keychain = require('./components/keychain');
 
 var packageJSON = require('../../package.json');
 var defaultConfiguration = require('../defaults.json');
@@ -151,9 +144,9 @@ function PN_API(setup) {
   var auth_key = setup.auth_key;
 
 
-  var keychain = new _keychain2['default']().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+  var keychain = new Keychain().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
 
-  var networkingComponent = new _networking2['default'](xdr, keychain, ssl, origin);
+  var networkingComponent = new Networking(xdr, keychain, ssl, origin);
 
   var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
   var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;

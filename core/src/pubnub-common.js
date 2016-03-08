@@ -6,8 +6,8 @@
 /* eslint guard-for-in: 0 */
 /* eslint block-scoped-var: 0 space-return-throw-case: 0, no-unused-vars: 0 */
 
-import Networking from './components/networking';
-import Keychain from './components/keychain';
+const Networking = require('./components/networking');
+const Keychain = require('./components/keychain');
 
 var packageJSON = require('../../package.json');
 var defaultConfiguration = require('../defaults.json');

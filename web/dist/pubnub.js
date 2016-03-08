@@ -1,4 +1,4 @@
-/*! 3.14.1 / web */
+/*! 3.14.2 / web */
 (function webpackUniversalModuleDefinition(root, factory) {
 	if(typeof exports === 'object' && typeof module === 'object')
 		module.exports = factory();
@@ -804,7 +804,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	module.exports = {
 		"name": "pubnub",
 		"preferGlobal": false,
-		"version": "3.14.1",
+		"version": "3.14.2",
 		"author": "PubNub <support@pubnub.com>",
 		"description": "Publish & Subscribe Real-time Messaging with PubNub",
 		"contributors": [
@@ -843,10 +843,12 @@ return /******/ (function(modules) { // webpackBootstrap
 			"babel-core": "^6.5.2",
 			"babel-eslint": "^5.0.0",
 			"babel-plugin-transform-class-properties": "^6.5.2",
+			"babel-plugin-transform-es2015-modules-commonjs": "^6.6.5",
 			"babel-plugin-transform-es3-member-expression-literals": "^6.5.0",
 			"babel-plugin-transform-es3-property-literals": "^6.5.0",
 			"babel-plugin-transform-flow-strip-types": "^6.5.0",
 			"babel-preset-es2015": "^6.5.0",
+			"babel-preset-es2015-loose": "^7.0.0",
 			"chai": "^3.5.0",
 			"eslint": "^2.2.0",
 			"eslint-config-airbnb": "^6.0.2",
@@ -917,15 +919,8 @@ return /******/ (function(modules) { // webpackBootstrap
 	/* eslint guard-for-in: 0 */
 	/* eslint block-scoped-var: 0 space-return-throw-case: 0, no-unused-vars: 0 */
 
-	var _networking = __webpack_require__(6);
-
-	var _networking2 = _interopRequireDefault(_networking);
-
-	var _keychain = __webpack_require__(7);
-
-	var _keychain2 = _interopRequireDefault(_keychain);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+	var Networking = __webpack_require__(6);
+	var Keychain = __webpack_require__(7);
 
 	var packageJSON = __webpack_require__(4);
 	var defaultConfiguration = __webpack_require__(9);
@@ -1060,9 +1055,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var auth_key = setup.auth_key;
 
 
-	  var keychain = new _keychain2['default']().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+	  var keychain = new Keychain().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
 
-	  var networkingComponent = new _networking2['default'](xdr, keychain, ssl, origin);
+	  var networkingComponent = new Networking(xdr, keychain, ssl, origin);
 
 	  var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
 	  var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;
@@ -2807,28 +2802,18 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	'use strict';
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
-	var _keychain = __webpack_require__(7);
-
-	var _keychain2 = _interopRequireDefault(_keychain);
-
-	function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
+
+	var Keychain = __webpack_require__(7);
 
 	var utils = __webpack_require__(8);
 
-	var _class = function () {
-	  function _class(xdr, keychain) {
+	var Networking = function () {
+	  function Networking(xdr, keychain) {
 	    var ssl = arguments.length <= 2 || arguments[2] === undefined ? false : arguments[2];
 	    var origin = arguments.length <= 3 || arguments[3] === undefined ? 'pubsub.pubnub.com' : arguments[3];
 
-	    _classCallCheck(this, _class);
+	    _classCallCheck(this, Networking);
 
 	    this._xdr = xdr;
 	    this._keychain = keychain;
@@ -2843,111 +2828,100 @@ return /******/ (function(modules) { // webpackBootstrap
 	    this.shiftSubscribeOrigin(false);
 	  }
 
-	  _createClass(_class, [{
-	    key: 'nextOrigin',
-	    value: function nextOrigin(failover) {
-	      // if a custom origin is supplied, use do not bother with shuffling subdomains
-	      if (this._providedFQDN.indexOf('pubsub.') === -1) {
-	        return this._providedFQDN;
-	      }
-
-	      var newSubDomain = void 0;
-
-	      if (failover) {
-	        newSubDomain = utils.generateUUID().split('-')[0];
-	      } else {
-	        this._currentSubDomain = this._currentSubDomain + 1;
-
-	        if (this._currentSubDomain >= this._maxSubDomain) {
-	          this._currentSubDomain = 1;
-	        }
-
-	        newSubDomain = this._currentSubDomain.toString();
-	      }
-
-	      return this._providedFQDN.replace('pubsub', 'ps' + newSubDomain);
-	    }
-
-	    // origin operations
-
-	  }, {
-	    key: 'shiftStandardOrigin',
-	    value: function shiftStandardOrigin() {
-	      var failover = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-	      this._standardOrigin = this.nextOrigin(failover);
-
-	      return this._standardOrigin;
-	    }
-	  }, {
-	    key: 'shiftSubscribeOrigin',
-	    value: function shiftSubscribeOrigin() {
-	      var failover = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
-
-	      this._subscribeOrigin = this.nextOrigin(failover);
-
-	      return this._subscribeOrigin;
-	    }
-
-	    // method based URL's
-
-	  }, {
-	    key: 'fetchHistory',
-	    value: function fetchHistory(channel, _ref) {
-	      var data = _ref.data;
-	      var callback = _ref.callback;
-	      var success = _ref.success;
-	      var fail = _ref.fail;
-
-	      var url = [this.getStandardOrigin(), 'v2', 'history', 'sub-key', this._keychain.getSubscribeKey(), 'channel', utils.encode(channel)];
-
-	      this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
-	    }
-	  }, {
-	    key: 'fetchReplay',
-	    value: function fetchReplay(source, destination, _ref2) {
-	      var data = _ref2.data;
-	      var callback = _ref2.callback;
-	      var success = _ref2.success;
-	      var fail = _ref2.fail;
-
-	      var url = [this.getStandardOrigin(), 'v1', 'replay', this._keychain.getPublishKey(), this._keychain.getSubscribeKey(), source, destination];
-
-	      this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
-	    }
-	  }, {
-	    key: 'fetchTime',
-	    value: function fetchTime(jsonp, _ref3) {
-	      var data = _ref3.data;
-	      var callback = _ref3.callback;
-	      var success = _ref3.success;
-	      var fail = _ref3.fail;
-
-	      var url = [this.getStandardOrigin(), 'time', jsonp];
-
-	      this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
-	    }
-	  }, {
-	    key: 'getOrigin',
-	    value: function getOrigin() {
+	  Networking.prototype.nextOrigin = function nextOrigin(failover) {
+	    // if a custom origin is supplied, use do not bother with shuffling subdomains
+	    if (this._providedFQDN.indexOf('pubsub.') === -1) {
 	      return this._providedFQDN;
 	    }
-	  }, {
-	    key: 'getStandardOrigin',
-	    value: function getStandardOrigin() {
-	      return this._standardOrigin;
-	    }
-	  }, {
-	    key: 'getSubscribeOrigin',
-	    value: function getSubscribeOrigin() {
-	      return this._subscribeOrigin;
-	    }
-	  }]);
 
-	  return _class;
+	    var newSubDomain = void 0;
+
+	    if (failover) {
+	      newSubDomain = utils.generateUUID().split('-')[0];
+	    } else {
+	      this._currentSubDomain = this._currentSubDomain + 1;
+
+	      if (this._currentSubDomain >= this._maxSubDomain) {
+	        this._currentSubDomain = 1;
+	      }
+
+	      newSubDomain = this._currentSubDomain.toString();
+	    }
+
+	    return this._providedFQDN.replace('pubsub', 'ps' + newSubDomain);
+	  };
+
+	  // origin operations
+
+
+	  Networking.prototype.shiftStandardOrigin = function shiftStandardOrigin() {
+	    var failover = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+	    this._standardOrigin = this.nextOrigin(failover);
+
+	    return this._standardOrigin;
+	  };
+
+	  Networking.prototype.shiftSubscribeOrigin = function shiftSubscribeOrigin() {
+	    var failover = arguments.length <= 0 || arguments[0] === undefined ? false : arguments[0];
+
+	    this._subscribeOrigin = this.nextOrigin(failover);
+
+	    return this._subscribeOrigin;
+	  };
+
+	  // method based URL's
+
+
+	  Networking.prototype.fetchHistory = function fetchHistory(channel, _ref) {
+	    var data = _ref.data;
+	    var callback = _ref.callback;
+	    var success = _ref.success;
+	    var fail = _ref.fail;
+
+	    var url = [this.getStandardOrigin(), 'v2', 'history', 'sub-key', this._keychain.getSubscribeKey(), 'channel', utils.encode(channel)];
+
+	    this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
+	  };
+
+	  Networking.prototype.fetchReplay = function fetchReplay(source, destination, _ref2) {
+	    var data = _ref2.data;
+	    var callback = _ref2.callback;
+	    var success = _ref2.success;
+	    var fail = _ref2.fail;
+
+	    var url = [this.getStandardOrigin(), 'v1', 'replay', this._keychain.getPublishKey(), this._keychain.getSubscribeKey(), source, destination];
+
+	    this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
+	  };
+
+	  Networking.prototype.fetchTime = function fetchTime(jsonp, _ref3) {
+	    var data = _ref3.data;
+	    var callback = _ref3.callback;
+	    var success = _ref3.success;
+	    var fail = _ref3.fail;
+
+	    var url = [this.getStandardOrigin(), 'time', jsonp];
+
+	    this._xdr({ data: data, callback: callback, success: success, fail: fail, url: url });
+	  };
+
+	  Networking.prototype.getOrigin = function getOrigin() {
+	    return this._providedFQDN;
+	  };
+
+	  Networking.prototype.getStandardOrigin = function getStandardOrigin() {
+	    return this._standardOrigin;
+	  };
+
+	  Networking.prototype.getSubscribeOrigin = function getSubscribeOrigin() {
+	    return this._subscribeOrigin;
+	  };
+
+	  return Networking;
 	}();
 
-	exports['default'] = _class;
+	module.exports = Networking;
 	//# sourceMappingURL=networking.js.map
 
 
@@ -2957,58 +2931,44 @@ return /******/ (function(modules) { // webpackBootstrap
 
 	"use strict";
 
-	Object.defineProperty(exports, "__esModule", {
-	  value: true
-	});
-
-	var _createClass = function () { function defineProperties(target, props) { for (var i = 0; i < props.length; i++) { var descriptor = props[i]; descriptor.enumerable = descriptor.enumerable || false; descriptor.configurable = true; if ("value" in descriptor) descriptor.writable = true; Object.defineProperty(target, descriptor.key, descriptor); } } return function (Constructor, protoProps, staticProps) { if (protoProps) defineProperties(Constructor.prototype, protoProps); if (staticProps) defineProperties(Constructor, staticProps); return Constructor; }; }();
-
 	function _classCallCheck(instance, Constructor) { if (!(instance instanceof Constructor)) { throw new TypeError("Cannot call a class as a function"); } }
 
-	var _class = function () {
-	  function _class() {
-	    _classCallCheck(this, _class);
+	var Keychain = function () {
+	  function Keychain() {
+	    _classCallCheck(this, Keychain);
 	  }
 
-	  _createClass(_class, [{
-	    key: "setSubscribeKey",
-	    value: function setSubscribeKey(subscribeKey) {
-	      this._subscribeKey = subscribeKey;
-	      return this;
-	    }
-	  }, {
-	    key: "setPublishKey",
-	    value: function setPublishKey(publishkey) {
-	      this._publishKey = publishkey;
-	      return this;
-	    }
-	  }, {
-	    key: "setAuthKey",
-	    value: function setAuthKey(authKey) {
-	      this._authKey = authKey;
-	      return this;
-	    }
-	  }, {
-	    key: "getSubscribeKey",
-	    value: function getSubscribeKey() {
-	      return this._subscribeKey;
-	    }
-	  }, {
-	    key: "getPublishKey",
-	    value: function getPublishKey() {
-	      return this._publishKey;
-	    }
-	  }, {
-	    key: "getAuthKey",
-	    value: function getAuthKey() {
-	      return this._authKey;
-	    }
-	  }]);
+	  Keychain.prototype.setSubscribeKey = function setSubscribeKey(subscribeKey) {
+	    this._subscribeKey = subscribeKey;
+	    return this;
+	  };
 
-	  return _class;
+	  Keychain.prototype.setPublishKey = function setPublishKey(publishkey) {
+	    this._publishKey = publishkey;
+	    return this;
+	  };
+
+	  Keychain.prototype.setAuthKey = function setAuthKey(authKey) {
+	    this._authKey = authKey;
+	    return this;
+	  };
+
+	  Keychain.prototype.getSubscribeKey = function getSubscribeKey() {
+	    return this._subscribeKey;
+	  };
+
+	  Keychain.prototype.getPublishKey = function getPublishKey() {
+	    return this._publishKey;
+	  };
+
+	  Keychain.prototype.getAuthKey = function getAuthKey() {
+	    return this._authKey;
+	  };
+
+	  return Keychain;
 	}();
 
-	exports["default"] = _class;
+	module.exports = Keychain;
 	//# sourceMappingURL=keychain.js.map
 
 
