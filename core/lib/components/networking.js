@@ -44,7 +44,7 @@ var _class = function () {
         return this._providedFQDN;
       }
 
-      var newSubDomain = undefined;
+      var newSubDomain = void 0;
 
       if (failover) {
         newSubDomain = utils.generateUUID().split('-')[0];
@@ -140,5 +140,5 @@ var _class = function () {
   return _class;
 }();
 
-exports.default = _class;
+exports['default'] = _class;
 //# sourceMappingURL=networking.js.map

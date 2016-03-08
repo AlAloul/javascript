@@ -843,6 +843,8 @@ return /******/ (function(modules) { // webpackBootstrap
 			"babel-core": "^6.5.2",
 			"babel-eslint": "^5.0.0",
 			"babel-plugin-transform-class-properties": "^6.5.2",
+			"babel-plugin-transform-es3-member-expression-literals": "^6.5.0",
+			"babel-plugin-transform-es3-property-literals": "^6.5.0",
 			"babel-plugin-transform-flow-strip-types": "^6.5.0",
 			"babel-preset-es2015": "^6.5.0",
 			"chai": "^3.5.0",
@@ -1058,9 +1060,9 @@ return /******/ (function(modules) { // webpackBootstrap
 	  var auth_key = setup.auth_key;
 
 
-	  var keychain = new _keychain2.default().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+	  var keychain = new _keychain2['default']().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
 
-	  var networkingComponent = new _networking2.default(xdr, keychain, ssl, origin);
+	  var networkingComponent = new _networking2['default'](xdr, keychain, ssl, origin);
 
 	  var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
 	  var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;
@@ -2849,7 +2851,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	        return this._providedFQDN;
 	      }
 
-	      var newSubDomain = undefined;
+	      var newSubDomain = void 0;
 
 	      if (failover) {
 	        newSubDomain = utils.generateUUID().split('-')[0];
@@ -2945,7 +2947,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _class;
 	}();
 
-	exports.default = _class;
+	exports['default'] = _class;
 	//# sourceMappingURL=networking.js.map
 
 
@@ -3006,7 +3008,7 @@ return /******/ (function(modules) { // webpackBootstrap
 	  return _class;
 	}();
 
-	exports.default = _class;
+	exports["default"] = _class;
 	//# sourceMappingURL=keychain.js.map
 
 

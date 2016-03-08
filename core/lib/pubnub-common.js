@@ -151,9 +151,9 @@ function PN_API(setup) {
   var auth_key = setup.auth_key;
 
 
-  var keychain = new _keychain2.default().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
+  var keychain = new _keychain2['default']().setAuthKey(auth_key || '').setSubscribeKey(subscribe_key).setPublishKey(publish_key);
 
-  var networkingComponent = new _networking2.default(xdr, keychain, ssl, origin);
+  var networkingComponent = new _networking2['default'](xdr, keychain, ssl, origin);
 
   var SUB_WINDOWING = +setup['windowing'] || DEF_WINDOWING;
   var SUB_TIMEOUT = (+setup['timeout'] || DEF_SUB_TIMEOUT) * SECOND;

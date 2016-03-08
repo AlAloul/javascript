@@ -51,5 +51,5 @@ var _class = function () {
   return _class;
 }();
 
-exports.default = _class;
+exports["default"] = _class;
 //# sourceMappingURL=keychain.js.map
