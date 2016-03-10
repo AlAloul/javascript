@@ -1070,7 +1070,7 @@ function PN_API(setup) {
       var SUB_ERROR = args['error'] || SUB_ERROR || function () {};
       var idlecb = args['idle'] || function () {};
       var presence = args['presence'] || 0;
-      var noheresync = args['noheresync'] || 0;
+      var noheresync = args['noheresync'] || true;
       var backfill = args['backfill'] || 0;
       var timetoken = args['timetoken'] || 0;
       var sub_timeout = args['timeout'] || SUB_TIMEOUT;
